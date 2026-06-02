@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
+
+# Local packaging/output folders
+github-upload/
+dist/
+
+# Local-only reference/source images and generation helpers
+tools/
+刘看山1.jpg
+刘看山2.jpg
+刘看山3.jpg
+刘看山4.jpg
