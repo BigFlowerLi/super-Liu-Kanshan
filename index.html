@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="一个以刘看山为主角的横版跳跃小游戏，收集灵感星，挑战三段冰雪关卡。"
+    />
+    <meta property="og:title" content="刘看山的灵感跳跃" />
+    <meta property="og:description" content="收集灵感星，打败怪物，和公主看山一起回到冰洞。" />
+    <meta property="og:image" content="assets/ending_summit.png" />
+    <title>刘看山的灵感跳跃</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="game-wrap" aria-label="刘看山的灵感跳跃">
+        <canvas id="game" width="960" height="540"></canvas>
+
+        <div class="topbar" aria-hidden="true">
+          <div class="brand">
+            <img src="images (1).jpg" alt="" />
+            <span>刘看山的灵感跳跃</span>
+          </div>
+          <div class="statline">
+            <span id="uiLevel">1-1</span>
+            <span id="uiCoins">0</span>
+            <span id="uiLives">3</span>
+          </div>
+        </div>
+
+        <div class="overlay" id="overlay">
+          <div class="poster">
+            <img src="assets/ending_summit.png" alt="" />
+          </div>
+          <div class="overlay-copy">
+            <p id="overlayKicker">第一站</p>
+            <h1 id="overlayTitle">海风草坡</h1>
+            <p id="overlayText">收集灵感星，穿过问号坡，抵达终点旗。</p>
+            <div class="actions">
+              <button id="primaryAction" type="button">开始游戏</button>
+              <button id="secondaryAction" type="button">选关</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="touch" aria-label="触屏操作">
+          <div class="pad">
+            <button class="touch-btn" data-hold="left" aria-label="向左">‹</button>
+            <button class="touch-btn" data-hold="right" aria-label="向右">›</button>
+          </div>
+          <div class="touch-actions">
+            <button class="touch-btn attack" data-tap="attack" aria-label="冰星攻击">I</button>
+            <button class="touch-btn pound" data-tap="pound" aria-label="下压">⌄</button>
+            <button class="touch-btn jump" data-tap="jump" aria-label="跳跃">⌃</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
