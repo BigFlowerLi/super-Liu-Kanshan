@@ -1,0 +1,239 @@
+:root {
+  --mobile-vh: 100dvh;
+}
+
+html,
+body.mobile-page {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body.mobile-page {
+  position: fixed;
+  inset: 0;
+  background: #86d9f5;
+}
+
+.mobile-shell {
+  width: 100vw;
+  height: var(--mobile-vh);
+  min-height: 0;
+  padding: 0;
+  place-items: center;
+  overflow: hidden;
+}
+
+.mobile-game-wrap {
+  width: min(100vw, calc(var(--mobile-vh) * 16 / 9));
+  height: min(var(--mobile-vh), calc(100vw * 9 / 16));
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mobile-game-wrap canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-topbar {
+  inset:
+    max(8px, env(safe-area-inset-top))
+    max(10px, env(safe-area-inset-right))
+    auto
+    max(10px, env(safe-area-inset-left));
+}
+
+.mobile-topbar .brand {
+  min-height: 34px;
+  max-width: 38vw;
+  gap: 7px;
+  padding: 5px 9px;
+  font-size: 0.78rem;
+}
+
+.mobile-topbar .brand img {
+  width: 24px;
+  height: 24px;
+}
+
+.mobile-topbar .brand span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-topbar .statline {
+  min-height: 34px;
+  gap: 7px;
+  padding: 5px 9px;
+  font-size: 0.82rem;
+}
+
+.mobile-topbar .statline span {
+  min-width: 38px;
+}
+
+.mobile-touch {
+  display: flex;
+  left: max(14px, env(safe-area-inset-left));
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  align-items: flex-end;
+  z-index: 7;
+}
+
+.mobile-pad,
+.mobile-actions {
+  gap: 14px;
+}
+
+.mobile-page .touch-btn {
+  width: clamp(62px, 9.4vw, 84px);
+  height: clamp(62px, 9.4vw, 84px);
+  border-radius: 50%;
+  border-color: rgba(23, 33, 43, 0.22);
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow:
+    0 12px 28px rgba(26, 72, 96, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #17212b;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  line-height: 1;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-page .touch-btn:active,
+.mobile-page .touch-btn.is-pressed {
+  transform: translateY(2px) scale(0.96);
+  filter: saturate(1.12);
+}
+
+.mobile-page .touch-btn.jump {
+  width: clamp(76px, 11.5vw, 104px);
+  height: clamp(76px, 11.5vw, 104px);
+  background: rgba(255, 217, 102, 0.88);
+}
+
+.mobile-page .touch-btn.pound {
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.mobile-page .touch-btn.attack {
+  width: clamp(64px, 9.8vw, 88px);
+  height: clamp(64px, 9.8vw, 88px);
+  color: #0d6f8c;
+  background: rgba(142, 232, 255, 0.82);
+  font-size: clamp(1.65rem, 3.9vw, 2.4rem);
+}
+
+.mobile-page .move-left,
+.mobile-page .move-right {
+  font-size: clamp(3rem, 7vw, 4.6rem);
+  padding-bottom: 8px;
+}
+
+.mobile-page .overlay {
+  grid-template-columns: minmax(120px, 0.56fr) minmax(220px, 1fr);
+  gap: clamp(14px, 3vw, 30px);
+  padding:
+    max(22px, env(safe-area-inset-top))
+    max(28px, env(safe-area-inset-right))
+    max(22px, env(safe-area-inset-bottom))
+    max(28px, env(safe-area-inset-left));
+}
+
+.mobile-page .poster {
+  width: min(30vw, 190px);
+}
+
+.mobile-page .overlay-copy h1 {
+  font-size: clamp(2rem, 6vw, 4.2rem);
+}
+
+.mobile-page .overlay-copy p {
+  font-size: clamp(0.88rem, 2.3vw, 1.05rem);
+}
+
+.mobile-page .actions {
+  margin-top: 16px;
+}
+
+.mobile-page .actions button {
+  min-height: 46px;
+}
+
+.rotate-hint {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.7), rgba(159, 229, 255, 0.82)),
+    rgba(159, 229, 255, 0.9);
+  pointer-events: none;
+}
+
+.phone-icon {
+  width: 82px;
+  height: 132px;
+  border: 6px solid rgba(23, 33, 43, 0.74);
+  border-radius: 22px;
+  position: relative;
+  transform: rotate(90deg);
+  animation: phone-tilt 1.45s ease-in-out infinite;
+}
+
+.phone-icon::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(23, 33, 43, 0.74);
+  transform: translateX(-50%);
+}
+
+@keyframes phone-tilt {
+  0%,
+  100% {
+    transform: rotate(84deg);
+  }
+  50% {
+    transform: rotate(96deg);
+  }
+}
+
+@media (orientation: portrait) and (max-width: 820px) {
+  .rotate-hint {
+    display: grid;
+  }
+}
+
+@media (max-height: 430px) and (orientation: landscape) {
+  .mobile-page .touch-btn {
+    width: clamp(54px, 8vw, 72px);
+    height: clamp(54px, 8vw, 72px);
+  }
+
+  .mobile-page .touch-btn.jump {
+    width: clamp(66px, 9.6vw, 88px);
+    height: clamp(66px, 9.6vw, 88px);
+  }
+
+  .mobile-topbar .brand span {
+    display: none;
+  }
+}
