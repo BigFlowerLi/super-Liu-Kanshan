@@ -12,6 +12,7 @@ const overlayTitle = document.getElementById("overlayTitle");
 const overlayText = document.getElementById("overlayText");
 const primaryAction = document.getElementById("primaryAction");
 const secondaryAction = document.getElementById("secondaryAction");
+const IS_MOBILE_PAGE = document.body.classList.contains("mobile-page");
 
 const W = canvas.width;
 const H = canvas.height;
@@ -21,6 +22,7 @@ const TILE = 48;
 const JUMP_BUFFER_TIME = 0.17;
 const COYOTE_TIME = 0.13;
 const TOUCH_JUMP_HOLD_TIME = 0.24;
+const MOBILE_TOUCH_JUMP_HOLD_TIME = 0.56;
 const JUMP_SPEED = -610;
 const STOMP_BOUNCE_SPEED = -340;
 const SPRING_SPEED = -700;
@@ -33,6 +35,7 @@ const GROUND_POUND_GRAVITY = 2600;
 const GROUND_POUND_MAX_FALL = 1180;
 const GROUND_POUND_BOUNCE = -230;
 const BOOSTED_JUMP_MULTIPLIER = 1.12;
+const MOBILE_JUMP_MULTIPLIER = 1.14;
 const FROST_ATTACK_TIME = 14;
 const FROST_COOLDOWN = 0.22;
 const FROST_SHOT_SPEED = 560;
@@ -52,6 +55,7 @@ const pressed = {
   jump: false,
 };
 let touchJumpHeld = false;
+let virtualJumpKeyHeld = false;
 
 const state = {
   mode: "title",
@@ -557,9 +561,11 @@ window.addEventListener("keyup", (event) => {
 
 function clearVirtualControls() {
   touchJumpHeld = false;
+  virtualJumpKeyHeld = false;
   player.touchJumpAssist = 0;
   keys.delete("ArrowLeft");
   keys.delete("ArrowRight");
+  keys.delete("Space");
 }
 
 window.clearVirtualControls = clearVirtualControls;
@@ -593,13 +599,19 @@ document.querySelectorAll("[data-tap='jump']").forEach((button) => {
       button.setPointerCapture(event.pointerId);
     }
     touchJumpHeld = true;
+    virtualJumpKeyHeld = true;
+    keys.add("Space");
     pressed.jump = true;
     player.jumpBuffer = JUMP_BUFFER_TIME;
-    player.touchJumpAssist = TOUCH_JUMP_HOLD_TIME;
+    player.touchJumpAssist = IS_MOBILE_PAGE ? MOBILE_TOUCH_JUMP_HOLD_TIME : TOUCH_JUMP_HOLD_TIME;
   };
   const end = (event) => {
     event.preventDefault();
     touchJumpHeld = false;
+    if (virtualJumpKeyHeld) {
+      keys.delete("Space");
+      virtualJumpKeyHeld = false;
+    }
   };
   button.addEventListener("pointerdown", start);
   button.addEventListener("pointerup", end);
@@ -607,6 +619,10 @@ document.querySelectorAll("[data-tap='jump']").forEach((button) => {
   button.addEventListener("pointerleave", end);
   button.addEventListener("lostpointercapture", () => {
     touchJumpHeld = false;
+    if (virtualJumpKeyHeld) {
+      keys.delete("Space");
+      virtualJumpKeyHeld = false;
+    }
   });
 });
 
@@ -733,7 +749,9 @@ function update(dt) {
   }
 
   if (player.jumpBuffer > 0 && (player.onGround || player.coyote > 0)) {
-    player.vy = player.jumpBoost > 0 ? JUMP_SPEED * BOOSTED_JUMP_MULTIPLIER : JUMP_SPEED;
+    const powerJumpBoost = player.jumpBoost > 0 ? BOOSTED_JUMP_MULTIPLIER : 1;
+    const mobileJumpBoost = IS_MOBILE_PAGE ? MOBILE_JUMP_MULTIPLIER : 1;
+    player.vy = JUMP_SPEED * powerJumpBoost * mobileJumpBoost;
     player.onGround = false;
     player.coyote = 0;
     player.jumpBuffer = 0;
