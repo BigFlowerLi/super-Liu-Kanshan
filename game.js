@@ -20,6 +20,7 @@ const TILE = 48;
 
 const JUMP_BUFFER_TIME = 0.17;
 const COYOTE_TIME = 0.13;
+const TOUCH_JUMP_HOLD_TIME = 0.24;
 const JUMP_SPEED = -610;
 const STOMP_BOUNCE_SPEED = -340;
 const SPRING_SPEED = -700;
@@ -50,6 +51,7 @@ const keys = new Set();
 const pressed = {
   jump: false,
 };
+let touchJumpHeld = false;
 
 const state = {
   mode: "title",
@@ -367,6 +369,7 @@ const player = {
   heartGlow: 0,
   starBurst: 0,
   jumpBuffer: 0,
+  touchJumpAssist: 0,
   coyote: 0,
   groundPound: false,
   turnSquash: 0,
@@ -429,6 +432,7 @@ function startLevel(index, mode = "playing") {
   player.heartGlow = 0;
   player.starBurst = 0;
   player.jumpBuffer = 0;
+  player.touchJumpAssist = 0;
   player.coyote = 0;
   player.groundPound = false;
   player.turnSquash = 0;
@@ -551,6 +555,21 @@ window.addEventListener("keyup", (event) => {
   keys.delete(event.code);
 });
 
+function clearVirtualControls() {
+  touchJumpHeld = false;
+  player.touchJumpAssist = 0;
+  keys.delete("ArrowLeft");
+  keys.delete("ArrowRight");
+}
+
+window.clearVirtualControls = clearVirtualControls;
+window.addEventListener("blur", clearVirtualControls);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    clearVirtualControls();
+  }
+});
+
 document.querySelectorAll("[data-hold]").forEach((button) => {
   const code = button.dataset.hold === "left" ? "ArrowLeft" : "ArrowRight";
   const start = (event) => {
@@ -568,10 +587,26 @@ document.querySelectorAll("[data-hold]").forEach((button) => {
 });
 
 document.querySelectorAll("[data-tap='jump']").forEach((button) => {
-  button.addEventListener("pointerdown", (event) => {
+  const start = (event) => {
     event.preventDefault();
+    if (button.setPointerCapture) {
+      button.setPointerCapture(event.pointerId);
+    }
+    touchJumpHeld = true;
     pressed.jump = true;
     player.jumpBuffer = JUMP_BUFFER_TIME;
+    player.touchJumpAssist = TOUCH_JUMP_HOLD_TIME;
+  };
+  const end = (event) => {
+    event.preventDefault();
+    touchJumpHeld = false;
+  };
+  button.addEventListener("pointerdown", start);
+  button.addEventListener("pointerup", end);
+  button.addEventListener("pointercancel", end);
+  button.addEventListener("pointerleave", end);
+  button.addEventListener("lostpointercapture", () => {
+    touchJumpHeld = false;
   });
 });
 
@@ -662,6 +697,7 @@ function update(dt) {
   player.heartGlow = Math.max(0, player.heartGlow - dt);
   player.starBurst = Math.max(0, player.starBurst - dt);
   player.jumpBuffer = Math.max(0, player.jumpBuffer - dt);
+  player.touchJumpAssist = Math.max(0, player.touchJumpAssist - dt);
   player.coyote = player.onGround ? COYOTE_TIME : Math.max(0, player.coyote - dt);
   player.turnSquash = Math.max(0, player.turnSquash - dt * 5.5);
   player.turnTimer = Math.max(0, player.turnTimer - dt);
@@ -704,7 +740,7 @@ function update(dt) {
     showMessage("跳");
   }
 
-  const holdingJump = keys.has("Space") || keys.has("ArrowUp") || keys.has("KeyW");
+  const holdingJump = keys.has("Space") || keys.has("ArrowUp") || keys.has("KeyW") || touchJumpHeld || player.touchJumpAssist > 0;
   const gravity = player.groundPound ? GROUND_POUND_GRAVITY : player.vy < 0 ? (holdingJump ? RISE_GRAVITY : CUT_JUMP_GRAVITY) : FALL_GRAVITY;
   player.vy += gravity * dt;
   player.vy = Math.min(player.vy, player.groundPound ? GROUND_POUND_MAX_FALL : MAX_FALL_SPEED);

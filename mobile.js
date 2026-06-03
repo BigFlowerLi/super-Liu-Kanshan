@@ -10,10 +10,15 @@ function setMobileViewportHeight() {
 }
 
 function clearMobileHeldInput() {
+  if (window.clearVirtualControls) {
+    window.clearVirtualControls();
+    return;
+  }
   try {
     if (typeof keys !== "undefined") {
       keys.delete("ArrowLeft");
       keys.delete("ArrowRight");
+      keys.delete("Space");
     }
   } catch (error) {
     // The desktop game script owns keyboard state; mobile cleanup is best-effort.
@@ -62,7 +67,6 @@ mobileButtons.forEach((button) => {
     if (navigator.vibrate) {
       navigator.vibrate(button.dataset.tap === "jump" ? 12 : 8);
     }
-    tryEnterMobileImmersiveMode();
   });
 
   const release = () => {
@@ -71,4 +75,8 @@ mobileButtons.forEach((button) => {
   button.addEventListener("pointerup", release);
   button.addEventListener("pointercancel", release);
   button.addEventListener("lostpointercapture", release);
+});
+
+document.querySelectorAll("#primaryAction, #secondaryAction").forEach((button) => {
+  button.addEventListener("pointerdown", tryEnterMobileImmersiveMode);
 });
